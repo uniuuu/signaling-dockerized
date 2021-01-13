@@ -1,0 +1,3 @@
+## sudoers file.
+caddy ALL = NOPASSWD: /bin/chown -R 1500\:0 /data/
+

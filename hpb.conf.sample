@@ -1,0 +1,26 @@
+####################################################
+#                                                  #
+#               Signaling Dockerized               #
+# https://codeberg.org/wh0ami/signaling-dockerized #
+#                                                  #
+####################################################
+
+# The backend will be reachable under the FQDN below - so you have to create the DNS records for it
+SIGNALING_HOSTNAME=signaling.domain.de
+
+
+# Your Timezone
+TZ='Europe/Berlin'
+
+
+# Janus API Key (generate with: openssl rand -base64 48)
+JANUS_API_KEY='JANUSKEY'
+
+# Hash-Key (generate with: openssl rand -hex 16)
+HASH_KEY='HASHKEY'
+
+# Block-Key (generate with: openssl rand -hex 16)
+BLOCK_KEY='BLOCKKEY'
+
+# TURN Key (generate with: openssl rand -base64 48)
+TURN_API_KEY='TURNAPIKEY'

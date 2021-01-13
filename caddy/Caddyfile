@@ -1,0 +1,53 @@
+# global configuration
+{
+	# Logging
+	#debug
+
+	# Ports
+	http_port 80
+	https_port 443
+
+	# TLS
+	key_type p384
+	# uncomment, if you want to use the staging environment of letsencrypt
+	#acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+
+	# Admin Endpoint
+	admin off
+}
+
+# proxy configuration
+{$SIGNALING_HOSTNAME} {
+	# HTTP Security Header
+	header {
+		# HSTS
+		Strict-Transport-Security "max-age=31536000;"
+
+		# Expect CT
+		Expect-CT "enforce, max-age=21600"
+
+		# disable clients from sniffing the media type
+		X-Content-Type-Options nosniff
+
+		# clickjacking protection
+		X-Frame-Options DENY
+
+		# keep referrer data off of HTTP connections
+		Referrer-Policy no-referrer
+
+		# Content Security Policy
+		Content-Security-Policy "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests; block-all-mixed-content"
+
+		# Permissions Policy (Feature Policy)
+		Permissions-Policy "geolocation=();midi=();notifications=();push=();sync-xhr=();microphone=();camera=();magnetometer=();gyroscope=();speaker=();vibrate=();fullscreen=();payment=();"
+	}
+
+	# Logging
+	log {
+		output stdout
+		level INFO
+	}
+
+	# Reverse Proxy to Signaling Backend Server
+	reverse_proxy /* http://[fde6:a83c:9f5c:9d4e::3]:8080
+}

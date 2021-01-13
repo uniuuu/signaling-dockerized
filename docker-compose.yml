@@ -1,0 +1,186 @@
+version: "3"
+
+networks:
+  signaling-internet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: fde6:a83c:9f5c:9d4d::/64
+  signaling-middleware:
+    driver: bridge
+    enable_ipv6: true
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: fde6:a83c:9f5c:9d4e::/64
+  signaling-backend:
+    driver: bridge
+    enable_ipv6: true
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: fde6:a83c:9f5c:9d4f::/64
+
+
+volumes:
+  caddy-data:
+
+
+services:
+  ### Reverse Proxy ###
+  caddy:
+    build: caddy/build
+    read_only: true
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
+    volumes:
+      - caddy-data:/data/:Z
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
+    tmpfs:
+      - /config:uid=1500,gid=0
+    ports:
+      - "80:80"
+      - "443:443"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_SETGID
+      - CAP_SETUID
+      - CAP_CHOWN
+      - DAC_OVERRIDE
+    networks:
+      signaling-internet:
+        ipv6_address: fde6:a83c:9f5c:9d4d::2
+        aliases:
+          - caddy-ext
+      signaling-middleware:
+        ipv6_address: fde6:a83c:9f5c:9d4e::2
+        aliases:
+          - caddy-mw
+
+  ### Middleware ###
+  signaling:
+    build: signaling/build
+    read_only: true
+    restart: always
+    depends_on:
+      - janus
+      - nats
+      - coturn
+    environment:
+      - TZ=${TZ}
+      - TURN_API_KEY=${TURN_API_KEY}
+      - HASH_KEY=${HASH_KEY}
+      - BLOCK_KEY=${BLOCK_KEY}
+      - JANUS_API_KEY=${JANUS_API_KEY}
+    volumes:
+      - ./signaling/server.conf:/etc/signaling/server.conf.template:ro,Z
+      - ./signaling/nextcloud.conf:/etc/signaling/nextcloud.conf.template:ro,Z
+    tmpfs:
+      - /config:uid=1500,gid=0
+    cap_drop:
+     - ALL
+    networks:
+      signaling-middleware:
+        ipv6_address: fde6:a83c:9f5c:9d4e::3
+        aliases:
+          - signaling-mw
+      signaling-backend:
+        ipv6_address: fde6:a83c:9f5c:9d4f::3
+        aliases:
+          - signaling-int
+
+  ### Backend ###
+  janus:
+    build: janus/build
+    read_only: true
+    restart: always
+    depends_on:
+      - coturn
+    environment:
+      - TZ=${TZ}
+      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
+      - TURN_API_KEY=${TURN_API_KEY}
+      - JANUS_API_KEY=${JANUS_API_KEY}
+    volumes:
+      - ./janus/janus.jcfg:/etc/janus/janus.jcfg.template:ro,Z
+      - ./janus/janus.transport.http.jcfg:/etc/janus/janus.transport.http.jcfg:ro,Z
+      - ./janus/janus.transport.websockets.jcfg:/etc/janus/janus.transport.websockets.jcfg:ro,Z
+      - ./janus/janus.transport.nanomsg.jcfg:/etc/janus/janus.transport.nanomsg.jcfg:ro,Z
+    tmpfs:
+      - /janustmp/:uid=1500,gid=0
+    cap_drop:
+     - ALL
+    networks:
+      signaling-backend:
+        ipv6_address: fde6:a83c:9f5c:9d4f::4
+        aliases:
+          - janus-int
+
+  coturn:
+    build: coturn/build
+    read_only: true
+    restart: always
+    depends_on:
+      - caddy
+    environment:
+      - TZ=${TZ}
+      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
+      - TURN_API_KEY=${TURN_API_KEY}
+    volumes:
+      - ./coturn/turnserver.conf:/etc/turnserver.conf.template:ro,Z
+    tmpfs:
+      - /turntmp:uid=100,gid=0
+      - /var/lib/coturn/:uid=100,gid=0
+      - /run:uid=100,gid=0
+    cap_drop:
+      - ALL
+    networks:
+      signaling-backend:
+        ipv6_address: fde6:a83c:9f5c:9d4f::5
+        aliases:
+          - coturn-int
+      
+  nats:
+    #image: nats:alpine
+    build: nats/build
+    read_only: true
+    command: ["-c", "/config/gnatsd.conf"]
+    restart: always
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ./nats/gnatsd.conf:/config/gnatsd.conf:ro,Z
+    cap_drop:
+      - ALL
+    networks:
+      signaling-backend:
+        ipv6_address: fde6:a83c:9f5c:9d4f::6
+        aliases:
+          - nats-int
+
+  ipv6nat:
+    image: robbertkl/ipv6nat
+    depends_on:
+      - caddy
+      - coturn
+      - janus
+      - nats
+      - signaling
+    restart: always
+    environment:
+      - TZ=${TZ}
+    security_opt:
+      - label=disable
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /lib/modules:/lib/modules:ro
+
