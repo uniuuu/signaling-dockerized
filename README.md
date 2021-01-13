@@ -7,7 +7,7 @@ Whats better than the original High-Performance for Nextcloud Spreed (Talk)? Its
 Basically you need a working and of course secured docker host with git installed on it.
 You need a dns entry (e.g. signaling.yourdomain.de) with a AAAA Record to your docker host (maybe also an A record for support of legacy clients).
 
-This stack will listen on port 80/tcp and 443/tcp, so make sure, that they are not blocked by another software on your docker host.
+This stack will listen on port 80/tcp and 443/tcp, so make sure, that they are not blocked by another software on your docker host. Also make sure that you have installed bash, git and of course docker and docker-compose.  
 
 On your docker host you have to do the following:
 ```
@@ -46,9 +46,8 @@ Coming soon. :)
 Just do the following:
 ```
 signaling:~# cd /opt/signaling-dockerized/
-signaling:/opt/signaling-dockerized# docker-compose down
+signaling:/opt/signaling-dockerized# docker-compose down -v --rmi all --remove-orphans
 ...
-signaling:/opt/signaling-dockerized# docker volume rm signaling-dockerized_caddy-data
 signaling:/opt/signaling-dockerized# cd ~
 signaling:~# rm -rf /opt/signaling-dockerized/
 ```
@@ -67,4 +66,5 @@ If you are anybody of the original nextcloud-spreed-signaling maintainers, you m
 - testing and bugfixing
 - adding a update script
 - adding resource limits to docker-compose.yml
+- adding more watchdogs to the containers
 - using a stable nextcloud-spreed-signaling release (not before v0.2.1)
