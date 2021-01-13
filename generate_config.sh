@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # config file name
 export CONFIGNAME='hpb.conf'
