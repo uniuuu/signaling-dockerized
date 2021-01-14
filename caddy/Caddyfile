@@ -39,7 +39,7 @@
 		Content-Security-Policy "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests; block-all-mixed-content"
 
 		# Permissions Policy (Feature Policy)
-		Permissions-Policy "geolocation=();midi=();notifications=();push=();sync-xhr=();microphone=();camera=();magnetometer=();gyroscope=();speaker=();vibrate=();fullscreen=();payment=();"
+		Permissions-Policy "geolocation=(); midi=(); notifications=(); push=(); sync-xhr=(); microphone=(); camera=(); magnetometer=(); gyroscope=(); speaker=(); vibrate=(); fullscreen=(); payment=();"
 	}
 
 	# Logging
