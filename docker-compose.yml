@@ -7,7 +7,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: fde6:a83c:9f5c:9d4d::/64
+        - subnet: 10.40.100.0/24
+        - subnet: fd40:100::/64
   signaling-middleware:
     driver: bridge
     enable_ipv6: true
@@ -15,7 +16,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: fde6:a83c:9f5c:9d4e::/64
+        - subnet: 10.40.101.0/24
+        - subnet: fd40:101::/64
   signaling-backend:
     driver: bridge
     enable_ipv6: true
@@ -23,7 +25,8 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: fde6:a83c:9f5c:9d4f::/64
+        - subnet: 10.40.102.0/24
+        - subnet: fd40:102::/64
 
 
 volumes:
@@ -56,11 +59,9 @@ services:
       - DAC_OVERRIDE
     networks:
       signaling-internet:
-        ipv6_address: fde6:a83c:9f5c:9d4d::2
         aliases:
           - caddy-ext
       signaling-middleware:
-        ipv6_address: fde6:a83c:9f5c:9d4e::2
         aliases:
           - caddy-mw
 
@@ -88,11 +89,9 @@ services:
      - ALL
     networks:
       signaling-middleware:
-        ipv6_address: fde6:a83c:9f5c:9d4e::3
         aliases:
           - signaling-mw
       signaling-backend:
-        ipv6_address: fde6:a83c:9f5c:9d4f::3
         aliases:
           - signaling-int
 
@@ -119,7 +118,6 @@ services:
      - ALL
     networks:
       signaling-backend:
-        ipv6_address: fde6:a83c:9f5c:9d4f::4
         aliases:
           - janus-int
 
@@ -143,7 +141,6 @@ services:
       - ALL
     networks:
       signaling-backend:
-        ipv6_address: fde6:a83c:9f5c:9d4f::5
         aliases:
           - coturn-int
       
@@ -161,7 +158,6 @@ services:
       - ALL
     networks:
       signaling-backend:
-        ipv6_address: fde6:a83c:9f5c:9d4f::6
         aliases:
           - nats-int
 

@@ -49,5 +49,5 @@
 	}
 
 	# Reverse Proxy to Signaling Backend Server
-	reverse_proxy /* http://[fde6:a83c:9f5c:9d4e::3]:8080
+	reverse_proxy /* http://signaling-mw:8080
 }
