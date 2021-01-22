@@ -40,9 +40,11 @@ The status of your container could be displayed with `docker-compose ps`.
 You can access the logs using `docker-compose logs`. Optionally you can also add a container name behind this command to see only the logs for a specific container. Further tips you can see with `docker-compose logs --help`.
 
 ### Updating
-You can update your stack with the `update.sh` script. It will pull this repository, the docker images, re-built the other docker images locally, recreate the containers and delete old ("dangling") images.
+You can update your stack with the `update.sh` script. It will pull this repository, the docker images, re-built the other docker images locally, recreate the containers and delete old ("dangling") images.  
+
 With the parameter `-n` you can run the script in a non-interactive mode - this will run the deletion of the old images with a force flag, so that you wont be asked whether you want delete those old images or not.  
-Further, you can also pass the `-d` parameter if you just want to prepare a update. With this parameter there will be no container recreation (`docker-compose up -d`).  
+
+Further, you can also pass the `-d` parameter if you just want to prepare an update. With this parameter there will be no container recreation (`docker-compose up -d`).  
 
 ### Uninstalling
 Just do the following:
@@ -66,7 +68,6 @@ If you are anybody of the original nextcloud-spreed-signaling maintainers, you m
 
 ### ToDo
 - testing and bugfixing
-- adding a update script
 - adding resource limits to docker-compose.yml
 - adding more watchdogs to the containers
 - using a stable nextcloud-spreed-signaling release (not before v0.2.1)
