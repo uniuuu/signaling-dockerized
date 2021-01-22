@@ -13,3 +13,4 @@ RUN adduser -g '' -h / -s /bin/ash -H -D -u 1500 nats && \
 USER nats
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["nats-server", "--config", "/etc/nats/nats-server.conf"]
+HEALTHCHECK --interval=30s --timeout=4s CMD nc -z localhost 4222 || exit 1

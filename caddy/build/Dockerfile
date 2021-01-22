@@ -19,3 +19,4 @@ ENV XDG_CONFIG_HOME /config
 ENV XDG_DATA_HOME /data
 
 ENTRYPOINT [ "/entrypoint.sh" ]
+HEALTHCHECK --interval=30s --timeout=4s CMD nc -z localhost 443 || exit 1
