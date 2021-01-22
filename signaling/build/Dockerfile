@@ -40,3 +40,4 @@ RUN adduser -D -H -s /bin/ash -g '' -u 1500 spreedbackend && \
 USER spreedbackend
 
 ENTRYPOINT [ "/entrypoint.sh" ]
+HEALTHCHECK --interval=30s --timeout=4s CMD wget -q --spider http://localhost:8080/api/v1/welcome || exit 1
