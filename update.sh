@@ -14,11 +14,14 @@ umask 0022
 # checking parameters
 while (($#)); do
 	case "${1}" in
-		--skip-start)
-		SKIP_START=y
-		;;
+                --non-interactive|-n)
+                NON_INTERACTIVE=y
+                ;;
+                --dont-apply|-d)
+                NO_APPLY=y
+                ;;
 		--help|-h)
-		echo -e './update.sh [--skip-start, -h|--help]\n             --skip-start         -   Do not start the docker-compose stack after the update
+		echo -e './update.sh [-h|--help, -n|--non-interactive, -d|--dont-apply]\n             --non-interactive    -  Always delete dangling images, do not ask\n             --dont-apply         -  Do not recreate the containers
 		'
 		exit 1
 	esac
@@ -31,14 +34,14 @@ echo "Pulling current repo from Codeberg..."
 git pull
 echo -e "Done!\n\n"
 
-# prefetching container images
-docker-compose image pull
+# prefetching container images from remote
+docker-compose pull
 
 # re-building containers
 docker-compose build --no-cache
 
 # re-creating containers
-docker-compose up -d
+[[ "$NO_APPLY" == y ]] || docker-compose up -d
 
 # remove dangling images
-docker image prune
+[[ "$NON_INTERACTIVE" == "y" ]] && docker image prune -f || docker image prune
