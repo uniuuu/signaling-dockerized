@@ -69,5 +69,4 @@ If you are anybody of the original nextcloud-spreed-signaling maintainers, you m
 ### ToDo
 - testing and bugfixing
 - adding resource limits to docker-compose.yml
-- adding more watchdogs to the containers
 - using a stable nextcloud-spreed-signaling release (not before v0.2.1)
