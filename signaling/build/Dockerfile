@@ -13,9 +13,9 @@ WORKDIR /workdir
 #WORKDIR /workdir/nextcloud-spreed-signaling-v0.2.0
 
 # compile signaling backend and performance test client
-RUN git clone https://github.com/strukturag/nextcloud-spreed-signaling.git && \
-    cd nextcloud-spreed-signaling && \
-    make build && \
+RUN git clone https://github.com/strukturag/nextcloud-spreed-signaling.git
+WORKDIR /workdir/nextcloud-spreed-signaling
+RUN make build && \
     make client
 
 # run the spreed-backend
