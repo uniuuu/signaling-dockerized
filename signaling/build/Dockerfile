@@ -19,7 +19,7 @@ RUN git clone https://github.com/strukturag/nextcloud-spreed-signaling.git && \
     make client
 
 # run the spreed-backend
-FROM alpine:3.12
+FROM alpine:3.13
 
 # install updates
 RUN apk update && \
