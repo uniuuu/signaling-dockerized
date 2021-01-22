@@ -1,4 +1,4 @@
-FROM alpine:3.13
+FROM alpine:3.12
 
 # update packages and install coturn + sed
 RUN apk update && \

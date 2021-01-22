@@ -19,7 +19,7 @@ RUN make build && \
     make client
 
 # run the spreed-backend
-FROM alpine:3.13
+FROM alpine:3.12
 
 # install updates
 RUN apk update && \
