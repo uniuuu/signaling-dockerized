@@ -13,7 +13,7 @@ SIGNALING_HOSTNAME=signaling.domain.de
 TZ='Europe/Berlin'
 
 
-# Your proxy network
+# Your proxy network - can be empty, if you use the caddy which is shipped by this stack
 PROXY_NETWORK=''
 
 

@@ -38,6 +38,6 @@ chmod 644 signaling/nextcloud.conf
 
 
 # exiting the script
-echo "Config created at ${CONFIGNAME}! You have to edit it, because we need a FQDN which must be set manually"
+echo "Config created at ${CONFIGNAME}! You have to edit it, because we need a network and a FQDN which must be set manually"
 echo "If you want to see the generated keys, use: cat ${CONFIGNAME}"
 exit 0
