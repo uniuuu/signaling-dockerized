@@ -4,10 +4,12 @@ Whats better than the original High-Performance for Nextcloud Spreed (Talk)? Its
 **DISCLAIMER:** This is *not* a rewrite or something of the original Nextcloud Spreed High-Performance Backend from Struktur AG ([GitHub](https://github.com/strukturag/nextcloud-spreed-signaling)). This version/docker-compose stack is just a setup of those software and its dependencies in docker.
 
 ### Setup
-Basically you need a working and of course secured docker host with git installed on it.
+Basically you need a working and of course secured docker host with bash, git and docker-compose installed on it.
 You need a dns entry (e.g. signaling.yourdomain.de) with a AAAA Record to your docker host (maybe also an A record for support of legacy clients).
 
-This stack will listen on port 80/tcp and 443/tcp, so make sure, that they are not blocked by another software on your docker host. Also make sure that you have installed bash, git and of course docker and docker-compose.  
+In the "normal" way, the stack will be deployed without a own rervse proxy. You can enter a name of a network in your `hpb.conf` for connecting to a own reverse proxy.
+
+But if you insist, the stack is also able to ship a own caddy reverse proxy. In this case, the stack will listen on port 80/tcp and 443/tcp, so make sure, that they are not blocked by another software on your docker host.  
 
 On your docker host you have to do the following:
 ```
@@ -16,19 +18,25 @@ signaling:/opt# git clone https://codeberg.org/wh0ami/signaling-dockerized.git
 Cloning into 'signaling-dockerized'...
 ...
 signaling:/opt# cd signaling-dockerized/
+# Only execute the following command, if you want to use the shipped caddy reverse proxy - otherwise skip the next command!
+signaling:/opt/signaling-dockerized# ln -s extras/docker-compose.override.yml docker-compose.override.yml
 signaling:/opt/signaling-dockerized# ./generate_config.sh
-Config created at hpb.conf! You have to edit it, because we need a FQDN which must be set manually
+Config created at hpb.conf! You have to edit it, because we need a network and a FQDN which must be set manually
 If you want to see the generated keys, use: cat hpb.conf
-signaling:/opt/signaling-dockerized# vi hpb.conf # enter your domain name mentioned above in this file
+signaling:/opt/signaling-dockerized# vi hpb.conf # enter your domain name and network mentioned above in this file
 signaling:/opt/signaling-dockerized# vi signaling/nextcloud.conf # configure your nextcloud instance like mentioned in the comments of this file
+signaling:/opt/signaling-dockerized# bash fixPermissions.sh
 signaling:/opt/signaling-dockerized# docker-compose up -d --build
 ...
 ```
 The last step can take a few minutes, because the docker images will be built locally on your docker host. It mainly depends on the network and computing performance of your docker host.
 
-Now you should be already done. You can enter your instance url and your secret now in your nextcloud instance and can start using Nextcloud Spreed/Talk.
+If you use a own revese proxy, dont forget to configure it - the singaling container will listen to your requests at `http://signaling:8080`.
 
-**Hint:** caddy obtains and manages the TLS certificate automatically from Lets Encrypt - this can take a few seconds or maybe minutes. But normally caddy is very fast and reliable.  
+Now you should be already done. You can enter your instance url and your secret now in your nextcloud instance and can start using Nextcloud Spreed/Talk. 
+
+
+**Hint:** the shipped caddy reverse proxy obtains and manages the TLS certificate automatically from Lets Encrypt - this can take a few seconds or maybe minutes. But normally caddy is very fast and reliable.  
   
 In your nextcloud, you have to configure your signaling server in the nextcloud talk settings like this:
 ![screenshots/nextcloud-setup.png](https://codeberg.org/wh0ami/signaling-dockerized/raw/branch/main/screenshots/nextcloud-setup.png)  
@@ -55,7 +63,7 @@ signaling:/opt/signaling-dockerized# docker-compose down -v --rmi all --remove-o
 signaling:/opt/signaling-dockerized# cd ~
 signaling:~# rm -rf /opt/signaling-dockerized/
 ```
-Maybe you also want to delete the container images - `docker images -a` and `docker rmi -f <image>` will help you doing this. And you may also want to use `docker system prune`, but be careful: this could also delete stuff from other containers, e.g. unused volumes or something.
+Maybe you also want to delete the container images - `docker image prune -a` will help you doing this. And you may also want to use `docker volume prune` and `docker system prune`, but BE CAREFUL: this could also delete stuff from other containers, e.g. unused volumes or something.
 
 ### "Why shouldnt i use the docker-compose stack from the original nextcloud-spreed-signaling maintainer?"
 In my opinion it is clearly unsafe and outdated. Just take a look in the Dockerfiles and you will see what i am talking about. Further more, nearly all processes in the containers are running as root and there are no security improvements like dropped capabilities or read only.  
