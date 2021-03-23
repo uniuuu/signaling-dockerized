@@ -1,5 +1,5 @@
 # Build the spreed-backend
-From golang:alpine AS builder
+From golang:1.15-alpine AS builder
 
 # install updates
 RUN apk update && \
@@ -19,7 +19,7 @@ RUN make build && \
     make client
 
 # run the spreed-backend
-FROM alpine:3.12
+FROM alpine:3.13
 
 # install updates
 RUN apk update && \

@@ -13,6 +13,10 @@ SIGNALING_HOSTNAME=signaling.domain.de
 TZ='Europe/Berlin'
 
 
+# Your proxy network
+PROXY_NETWORK=''
+
+
 # Janus API Key (generate with: openssl rand -base64 48)
 JANUS_API_KEY='JANUSKEY'
 

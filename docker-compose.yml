@@ -1,23 +1,15 @@
 version: "3"
 
 networks:
-  signaling-internet:
+  public:
     driver: bridge
     enable_ipv6: true
+    internal: false
     ipam:
       driver: default
       config:
-        - subnet: 10.40.100.0/24
-        - subnet: fd40:100::/64
-  signaling-middleware:
-    driver: bridge
-    enable_ipv6: true
-    internal: true
-    ipam:
-      driver: default
-      config:
-        - subnet: 10.40.101.0/24
-        - subnet: fd40:101::/64
+        - subnet: 10.40.99.0/24
+        - subnet: fd40:99::/64
   signaling-backend:
     driver: bridge
     enable_ipv6: true
@@ -27,44 +19,12 @@ networks:
       config:
         - subnet: 10.40.102.0/24
         - subnet: fd40:102::/64
-
-
-volumes:
-  caddy-data:
+  proxy-net:
+    external:
+      name: ${PROXY_NETWORK}
 
 
 services:
-  ### Reverse Proxy ###
-  caddy:
-    build: caddy/build
-    read_only: true
-    restart: always
-    environment:
-      - TZ=${TZ}
-      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
-    volumes:
-      - caddy-data:/data/:Z
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
-    tmpfs:
-      - /config:uid=1500,gid=0
-    ports:
-      - "80:80"
-      - "443:443"
-    cap_drop:
-      - ALL
-    cap_add:
-      - CAP_SETGID
-      - CAP_SETUID
-      - CAP_CHOWN
-      - DAC_OVERRIDE
-    networks:
-      signaling-internet:
-        aliases:
-          - caddy-ext
-      signaling-middleware:
-        aliases:
-          - caddy-mw
-
   ### Middleware ###
   signaling:
     build: signaling/build
@@ -88,9 +48,12 @@ services:
     cap_drop:
      - ALL
     networks:
-      signaling-middleware:
+      public:
         aliases:
-          - signaling-mw
+          - signaling
+      proxy-net:
+        aliases:
+          - signaling
       signaling-backend:
         aliases:
           - signaling-int
@@ -125,8 +88,6 @@ services:
     build: coturn/build
     read_only: true
     restart: always
-    depends_on:
-      - caddy
     environment:
       - TZ=${TZ}
       - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
@@ -160,23 +121,3 @@ services:
       signaling-backend:
         aliases:
           - nats-int
-
-  ipv6nat:
-    image: robbertkl/ipv6nat
-    depends_on:
-      - caddy
-      - coturn
-      - janus
-      - nats
-      - signaling
-    restart: always
-    environment:
-      - TZ=${TZ}
-    security_opt:
-      - label=disable
-    privileged: true
-    network_mode: "host"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /lib/modules:/lib/modules:ro
-

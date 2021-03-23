@@ -1,0 +1,71 @@
+version: "3"
+
+networks:
+  proxy-net:
+    driver: bridge
+    enable_ipv6: true
+    internal: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.40.100.0/24
+        - subnet: fd40:100::/64
+
+
+volumes:
+  caddy-data:
+
+
+services:
+  ### Reverse Proxy ###
+  caddy:
+    build: caddy/build
+    read_only: true
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
+    volumes:
+      - caddy-data:/data/:Z
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
+    tmpfs:
+      - /config:uid=1500,gid=0
+    ports:
+      - "80:80"
+      - "443:443"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_SETGID
+      - CAP_SETUID
+      - CAP_CHOWN
+      - DAC_OVERRIDE
+    networks:
+      proxy-net:
+        aliases:
+          - caddy-ext
+      signaling-middleware:
+        aliases:
+          - caddy-mw
+
+  ### IPv6 compatibility ###
+  ipv6nat:
+    image: robbertkl/ipv6nat
+    restart: always
+    environment:
+      - TZ=${TZ}
+    tmpfs:
+      - /run/:uid=0,gid=0,noexec,nosuid,size=1m
+    security_opt:
+      - label=disable
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    network_mode: "host"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /lib/modules:/lib/modules:ro
+
