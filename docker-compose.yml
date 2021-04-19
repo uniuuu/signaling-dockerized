@@ -56,7 +56,7 @@ services:
           - signaling
       signaling-backend:
         aliases:
-          - signaling-int
+          - signaling
 
   ### Backend ###
   janus:
@@ -67,22 +67,28 @@ services:
       - coturn
     environment:
       - TZ=${TZ}
-      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
       - TURN_API_KEY=${TURN_API_KEY}
       - JANUS_API_KEY=${JANUS_API_KEY}
+      - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
     volumes:
       - ./janus/janus.jcfg:/etc/janus/janus.jcfg.template:ro,Z
       - ./janus/janus.transport.http.jcfg:/etc/janus/janus.transport.http.jcfg:ro,Z
+      - ./janus/janus.transport.mqtt.jcfg:/etc/janus/janus.transport.mqtt.jcfg:ro,Z
       - ./janus/janus.transport.websockets.jcfg:/etc/janus/janus.transport.websockets.jcfg:ro,Z
       - ./janus/janus.transport.nanomsg.jcfg:/etc/janus/janus.transport.nanomsg.jcfg:ro,Z
     tmpfs:
       - /janustmp/:uid=1500,gid=0
+      - /usr/share/janus/demos:uid=1500,gid=0
+      - /usr/share/janus/streams:uid=1500,gid=0
+      - /usr/share/janus/recordings:uid=1500,gid=0
+    ports:
+      - "20000-20100:20000-20100/udp"
     cap_drop:
      - ALL
     networks:
-      signaling-backend:
+      public:
         aliases:
-          - janus-int
+          - janus
 
   coturn:
     build: coturn/build
@@ -98,12 +104,16 @@ services:
       - /turntmp:uid=100,gid=0
       - /var/lib/coturn/:uid=100,gid=0
       - /run:uid=100,gid=0
+    ports:
+      - "3478:3478/tcp"
+      - "3478:3478/udp"
+      - "49160-49200:49160-49200/udp"
     cap_drop:
       - ALL
     networks:
-      signaling-backend:
+      public:
         aliases:
-          - coturn-int
+          - coturn
       
   nats:
     #image: nats:alpine
@@ -120,4 +130,4 @@ services:
     networks:
       signaling-backend:
         aliases:
-          - nats-int
+          - nats
