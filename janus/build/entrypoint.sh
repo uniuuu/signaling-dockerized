@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # install configuration
-cp /etc/janus/*.jcfg /janustmp/
-cp /etc/janus/janus.jcfg.template /janustmp/janus.jcfg
+cp /usr/local/etc/janus/*.jcfg /janustmp/
+cp /usr/local/etc/janus/janus.jcfg.template /janustmp/janus.jcfg
 chmod 640 /janustmp/*.jcfg
 
 # fix parameters in config

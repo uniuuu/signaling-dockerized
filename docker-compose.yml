@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 
 networks:
   signaling-internet:
@@ -108,10 +108,10 @@ services:
       - TURN_API_KEY=${TURN_API_KEY}
       - JANUS_API_KEY=${JANUS_API_KEY}
     volumes:
-      - ./janus/janus.jcfg:/etc/janus/janus.jcfg.template:ro,Z
-      - ./janus/janus.transport.http.jcfg:/etc/janus/janus.transport.http.jcfg:ro,Z
-      - ./janus/janus.transport.websockets.jcfg:/etc/janus/janus.transport.websockets.jcfg:ro,Z
-      - ./janus/janus.transport.nanomsg.jcfg:/etc/janus/janus.transport.nanomsg.jcfg:ro,Z
+      - ./janus/janus.jcfg:/usr/local/etc/janus/janus.jcfg.template:ro,Z
+      - ./janus/janus.transport.http.jcfg:/usr/local/etc/janus/janus.transport.http.jcfg:ro,Z
+      - ./janus/janus.transport.websockets.jcfg:/usr/local/etc/janus/janus.transport.websockets.jcfg:ro,Z
+      - ./janus/janus.transport.nanomsg.jcfg:/usr/local/etc/janus/janus.transport.nanomsg.jcfg:ro,Z
     tmpfs:
       - /janustmp/:uid=1500,gid=0
     cap_drop:

@@ -15,11 +15,12 @@ WORKDIR /workdir
 # compile signaling backend and performance test client
 RUN git clone https://github.com/strukturag/nextcloud-spreed-signaling.git
 WORKDIR /workdir/nextcloud-spreed-signaling
+RUN git checkout tags/v0.4.1 -b v0.4.1 
 RUN make build && \
     make client
 
 # run the spreed-backend
-FROM alpine:3.12
+FROM alpine:3
 
 # install updates
 RUN apk update && \
