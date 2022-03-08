@@ -1,3 +1,8 @@
+## Forked from https://codeberg.org/wh0ami/signaling-dockerized
+
+Original docker-compose.yaml file comes with Caddy as a reverse proxy. 
+In case it's required to use an existing preinstalled proxy and setup signaling as a service only use docker-compose.noproxy.yaml where port exposed is 8080.
+
 ## signaling-dockerized
 Whats better than the original High-Performance for Nextcloud Spreed (Talk)? Its a completly working, up-to-date and secure docker-compose stack, which can be deployed in less than 5 minutes on a docker host!  
 
