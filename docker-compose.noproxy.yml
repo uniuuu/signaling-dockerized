@@ -82,6 +82,7 @@ services:
     build: coturn/build
     read_only: true
     restart: always
+    network_mode: host
     environment:
       - TZ=${TZ}
       - SIGNALING_HOSTNAME=${SIGNALING_HOSTNAME}
@@ -94,10 +95,10 @@ services:
       - /run:uid=100,gid=0
     cap_drop:
       - ALL
-    networks:
-      signaling-backend:
-        aliases:
-          - coturn-int
+        #    networks:
+        #      signaling-backend:
+        #        aliases:
+        #          - coturn-int
       
   nats:
     #image: nats:alpine

@@ -186,10 +186,10 @@ media: {
 # be used for gathering candidates, and enable or disable the
 # internal libnice debugging, if needed.
 nat: {
-	stun_server = "coturn-int"
-	stun_port = 3478
+#	stun_server = "coturn-int"
+#	stun_port = 3478
 	nice_debug = false
-	full_trickle = true
+#	full_trickle = true
 	#ice_lite = true
 	#ice_tcp = true
 
@@ -207,9 +207,9 @@ nat: {
 	# statically configured TURN server, and thus provide the address of the
 	# TURN server, the transport (udp/tcp/tls) to use, and a set of valid
 	# credentials to authenticate...
-	turn_server = "coturn-int"
-	turn_port = 3478
-	turn_type = "udp"
+#	turn_server = "coturn-int"
+#	turn_port = 3478
+#	turn_type = "udp"
 	#turn_user = "myuser"
 	#turn_pwd = "mypassword"
 
@@ -221,7 +221,7 @@ nat: {
 	# the HTTP method to use (GET or POST) and, if required, the API key Janus
 	# must provide.
 	#turn_rest_api = "http://yourbackend.com/path/to/api"
-	turn_rest_api_key = "JANUSSECRET"
+#	turn_rest_api_key = "JANUSSECRET"
 	#turn_rest_api_method = "GET"
 
 	# You can also choose which interfaces should be explicitly used by the
